@@ -25,13 +25,13 @@ function start() {
         }
     ]).then(function (answer) {
         if (answer.userChoice === "View all employees") {
-            viewEmployees();
+            viewTable("employee");
         } 
         else if (answer.userChoice === "View all roles") {
-            viewRoles();
+            viewTable("role");
         }
         else if (answer.userChoice === "View all departments") {
-            viewDepartments();
+            viewTable("department");
         } else {
             console.log("Shutting down...");
             connection.end();
@@ -39,3 +39,11 @@ function start() {
     });
 }
 
+function viewTable(value) {
+    console.log("Gathering all employee data...\n");
+    connection.query(`SELECT * FROM ${value}`, function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        start();
+    });
+}
