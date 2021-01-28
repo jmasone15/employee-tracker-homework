@@ -16,7 +16,7 @@ connection.connect(function (err) {
     console.log(`Connected as id ${connection.threadId} \n`);
     console.log(
         chalk.magenta(
-            figlet.textSync("Employee Tracker", {horizonalLayout: "full"})
+            figlet.textSync("Employee Tracker", { horizonalLayout: "full" })
         )
     );
     start();
@@ -76,8 +76,15 @@ function viewTable(value) {
     });
 }
 
-function updateRole() {
-
+function departmentID (value) {
+    connection.query(`SELECT id FROM department WHERE name='${value}'`,
+    function (err, res) {
+        if (err) throw err;
+        let newvalue = JSON.stringify(res)
+        let newervalue = newvalue[7]
+        console.log(newervalue);
+        return newervalue;
+    });
 }
 
 function addDepartment() {
@@ -144,28 +151,14 @@ function addRole() {
                 message: "What is the salary of the new role?"
             },
         ]).then(function (answer) {
+            console.log(answer.department);
+            console.log(departmentID(answer.department));
             connection.query(
                 "INSERT INTO role SET ?",
                 {
                     title: answer.roleTitle,
                     salary: answer.roleSalary,
-                    department_id: function () {
-                        if (answer.department === "Sales") {
-                            return 1;
-                        }
-                        else if (answer.department === "Accounting") {
-                            return 2;
-                        }
-                        else if (answer.department === "Engineering") {
-                            return 3;
-                        }
-                        else if (answer.department === "Human Resources") {
-                            return 4;
-                        }
-                        else if (answer.department === "Management") {
-                            return 5;
-                        }
-                    }
+                    department_id: departmentID(answer.department)
                 },
                 function (err, res) {
                     if (err) throw err;
